@@ -35,9 +35,13 @@ python necromunda_discord_bot.py
 
 ### Commands
 
-- `!ping` – Check if the bot is responsive
-- `!create_campaign <name>` – Create a new campaign
-- `!register_gang <campaign_id> <yaktribe_url>` – Register your gang with a campaign using your Yaktribe link
+**Slash Commands:**
+
+- `/ping` – Check if the bot is responsive
+- `/create_campaign <name>` – Create a new campaign
+- `/list_campaigns` – View all campaigns
+- `/register_gang <campaign_id> <yaktribe_url>` – Register your gang to a campaign
+- `/list_gangs <campaign_id>` – View all gangs in a campaign
 
 ### To Do
 
