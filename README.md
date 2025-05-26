@@ -55,6 +55,7 @@ python discord_bot.py
 - `/gang mine` – View all gangs registered by the current user, including campaign info
 - `/gang delete <id>` – Delete a gang (only by the owner)
 - `/dice roll <formula>` – Roll dice using expressions like `2d6+3`
+- `/admin export_db` - Export the `necromunda.db` file.
 
 ### File Structure
 

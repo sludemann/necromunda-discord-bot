@@ -98,7 +98,7 @@ def delete_gang(gang_id: int, user_id: str) -> str:
 def get_gangs_by_campaign(campaign_id: int):
     conn = get_connection()
     c = conn.cursor()
-    c.execute('SELECT id, yaktribe_url, user_id FROM gangs WHERE campaign_id = ?', (campaign_id,))
+    c.execute('SELECT id, yaktribe_url, user_id, gang_name, gang_type FROM gangs WHERE campaign_id = ?', (campaign_id,))
     gangs = c.fetchall()
     conn.close()
     return gangs

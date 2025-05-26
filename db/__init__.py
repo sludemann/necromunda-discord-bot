@@ -41,6 +41,15 @@ def init_db():
             gangers TEXT,
             FOREIGN KEY (campaign_id) REFERENCES campaigns (id)
         )''')
+        conn.execute('''CREATE TABLE IF NOT EXISTS gang_transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            gang_id INTEGER NOT NULL,
+            change INTEGER NOT NULL,
+            reason TEXT,
+            user_id INTEGER,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (gang_id) REFERENCES gangs (id)
+        )''')
         set_schema_version(conn, 1)
 
     conn.commit()

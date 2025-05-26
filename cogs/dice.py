@@ -16,7 +16,7 @@ class Dice(commands.Cog):
 # Define as slash command separately
 @app_commands.command(name="roll", description="Roll dice using standard notation (e.g., 2d6+3)")
 async def roll_slash(interaction: discord.Interaction, formula: str):
-    result = Dice.roll_formula_static(formula)
+    result = Dice.roll_formula(formula)
     await interaction.response.send_message(result)
 
 # Slash command group (optional if more dice commands are added later)

@@ -6,6 +6,8 @@ from db.__init__ import init_db
 from cogs.campaigns import Campaigns, campaign_group
 from cogs.gangs import Gangs, gang_group
 from cogs.dice import Dice, dice_group
+from cogs.admin import Admin, admin_group
+from cogs.banking import Banking, banking_group
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -23,6 +25,10 @@ async def on_ready():
         bot.tree.add_command(gang_group)
         await bot.add_cog(Dice(bot))
         bot.tree.add_command(dice_group)
+        await bot.add_cog(Admin(bot))
+        bot.tree.add_command(admin_group)
+        await bot.add_cog(Banking(bot))
+        bot.tree.add_command(banking_group)
         synced = await bot.tree.sync()
         print(f'Synced {len(synced)} slash commands.')
     except Exception as e:
@@ -35,4 +41,5 @@ async def ping(ctx):
 if __name__ == '__main__':
     load_dotenv()
     init_db()
+    bot.owner_id = int(os.getenv("BOT_OWNER_ID"))
     bot.run(os.getenv('DISCORD_BOT_TOKEN'))

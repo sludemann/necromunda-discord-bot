@@ -1,0 +1,75 @@
+import discord
+from discord.ext import commands
+from discord import app_commands
+from db.banking import log_transaction, get_current_credits, get_transaction_history
+from db.gangs import get_gangs_by_campaign
+from db.campaigns import get_all_campaigns
+
+async def gang_autocomplete(interaction: discord.Interaction, current: str):
+    campaign_id = interaction.namespace.campaign_id
+    gangs = get_gangs_by_campaign(campaign_id)
+    return [app_commands.Choice(name=f"{g[3]} ({g[4]})", value=g[0]) for g in gangs if current.lower() in g[1].lower()][:25]
+
+async def campaign_autocomplete(interaction: discord.Interaction, current: str):
+    campaigns = get_all_campaigns(str(interaction.guild.id))
+    return [app_commands.Choice(name=f"{name} ({cid})", value=cid) for cid, name in campaigns if current.lower() in name.lower()][:25]
+
+class Banking(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+@app_commands.command(name="add_credits", description="Add credits to a gang")
+@app_commands.describe(campaign_id="ID of the campaign", gang_id="Select a gang", amount="Credits to add")
+@app_commands.autocomplete(campaign_id=campaign_autocomplete, gang_id=gang_autocomplete)
+async def add_credits(interaction: discord.Interaction, campaign_id: int, gang_id: int, amount: int):
+    log_transaction(gang_id, amount, "manual addition", interaction.user.id)
+    await interaction.response.send_message(f"Added {amount} credits to gang {gang_id}.")
+
+@app_commands.command(name="subtract_credits", description="Subtract credits from a gang")
+@app_commands.describe(campaign_id="ID of the campaign", gang_id="Select a gang", amount="Credits to subtract")
+@app_commands.autocomplete(campaign_id=campaign_autocomplete, gang_id=gang_autocomplete)
+async def subtract_credits(interaction: discord.Interaction, campaign_id: int, gang_id: int, amount: int):
+    current = get_current_credits(gang_id)
+    if current < amount:
+        await interaction.response.send_message(f"Cannot subtract {amount} credits. Gang {gang_id} only has {current} credits.", ephemeral=True)
+        return
+    log_transaction(gang_id, -amount, "manual subtraction", interaction.user.id)
+    await interaction.response.send_message(f"Subtracted {amount} credits from gang {gang_id}.")
+
+@app_commands.command(name="set_credits", description="Set a gang's credits to an exact value")
+@app_commands.describe(campaign_id="ID of the campaign", gang_id="Select a gang", amount="New credit value")
+@app_commands.autocomplete(campaign_id=campaign_autocomplete, gang_id=gang_autocomplete)
+async def set_credits(interaction: discord.Interaction, campaign_id: int, gang_id: int, amount: int):
+    current = get_current_credits(gang_id)
+    delta = amount - current
+    log_transaction(gang_id, delta, "manual set", interaction.user.id)
+    await interaction.response.send_message(f"Set credits for gang {gang_id} to {amount}.")
+
+@app_commands.command(name="view_credits", description="View the current credits for a gang")
+@app_commands.describe(campaign_id="ID of the campaign", gang_id="Select a gang")
+@app_commands.autocomplete(campaign_id=campaign_autocomplete, gang_id=gang_autocomplete)
+async def view_credits(interaction: discord.Interaction, campaign_id: int, gang_id: int):
+    total = get_current_credits(gang_id)
+    await interaction.response.send_message(f"Gang {gang_id} has {total} credits.")
+
+@app_commands.command(name="credit_history", description="View the credit transaction history for a gang")
+@app_commands.describe(campaign_id="ID of the campaign", gang_id="Select a gang")
+@app_commands.autocomplete(campaign_id=campaign_autocomplete, gang_id=gang_autocomplete)
+async def credit_history(interaction: discord.Interaction, campaign_id: int, gang_id: int):
+    history = get_transaction_history(gang_id)
+    if history:
+        formatted = "\n".join([f"{t} | {r} | {c:+}" for c, r, t in history])
+        await interaction.response.send_message(f"**Transaction History for Gang {gang_id}:**\n{formatted}")
+    else:
+        await interaction.response.send_message("No transaction history found.")
+
+banking_group = app_commands.Group(name="bank", description="Gang credit management")
+banking_group.add_command(add_credits)
+banking_group.add_command(subtract_credits)
+banking_group.add_command(set_credits)
+banking_group.add_command(view_credits)
+banking_group.add_command(credit_history)
+
+def setup(bot):
+    bot.add_cog(Banking(bot))
+    bot.tree.add_command(banking_group)
