@@ -1,0 +1,19 @@
+# .gitignore
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+
+# SQLite database
+necromunda.db
+
+# Environment variables or secrets
+.env
+
+# Misc
+.DS_Store
+*.log
