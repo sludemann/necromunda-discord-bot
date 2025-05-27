@@ -4,15 +4,7 @@ from discord import app_commands
 from db.banking import log_transaction, get_current_credits, get_transaction_history
 from db.gangs import get_gangs_by_campaign
 from db.campaigns import get_all_campaigns
-
-async def gang_autocomplete(interaction: discord.Interaction, current: str):
-    campaign_id = interaction.namespace.campaign_id
-    gangs = get_gangs_by_campaign(campaign_id)
-    return [app_commands.Choice(name=f"{g[3]} ({g[4]})", value=g[0]) for g in gangs if current.lower() in g[1].lower()][:25]
-
-async def campaign_autocomplete(interaction: discord.Interaction, current: str):
-    campaigns = get_all_campaigns(str(interaction.guild.id))
-    return [app_commands.Choice(name=f"{name} ({cid})", value=cid) for cid, name in campaigns if current.lower() in name.lower()][:25]
+from cogs.autocomplete import campaign_autocomplete, gang_autocomplete
 
 class Banking(commands.Cog):
     def __init__(self, bot):

@@ -50,6 +50,36 @@ def init_db():
             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (gang_id) REFERENCES gangs (id)
         )''')
+        conn.execute('''CREATE TABLE IF NOT EXISTS gang_territories (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            gang_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            type TEXT,
+            static_value INTEGER,
+            roll_formula TEXT,
+            FOREIGN KEY (gang_id) REFERENCES gangs (id)
+        )''')
+        conn.execute('''CREATE TABLE IF NOT EXISTS gang_assets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            gang_id INTEGER NOT NULL,
+            type TEXT NOT NULL,
+            value INTEGER,
+            roll_formula TEXT,
+            is_consumed BOOLEAN DEFAULT 0,
+            should_sell BOOLEAN DEFAULT 0,
+            note TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (gang_id) REFERENCES gangs (id)
+        )''')
+        conn.execute('''CREATE TABLE IF NOT EXISTS gang_hangers_on (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            gang_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            type TEXT,
+            static_value INTEGER,
+            roll_formula TEXT,
+            FOREIGN KEY (gang_id) REFERENCES gangs (id)
+        )''')
         set_schema_version(conn, 1)
 
     conn.commit()
