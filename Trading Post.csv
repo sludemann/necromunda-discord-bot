@@ -1,0 +1,249 @@
+﻿#,Weighting factor,Quantity,Category,Name,Rarity Rating,Rarity,Cost
+1,8,1d3,Ammo,Static rounds,I9,Illegal,10
+2,7,1d3,Ammo,Warp rounds,I10,Illegal,15
+3,5,1d3,Ammo,Gas Shells,R11,Rare,25
+4,7,1d3,Ammo,Shatter Shells,R9,Rare,15
+5,8,2d3,Ammo,Firestorm,R8,Rare,30
+6,9,10,Ammo,Solid,C,Common,5
+7,7,1d3,Ammo,Executioner,R9,Rare,20
+8,8,2d3,Ammo,Inferno,R8,Rare,15
+9,8,2d3,Ammo,Phosphor,R8,Rare,10
+10,7,1d3,Ammo,Plantbuster ,R9,Rare,15
+11,7,1d3,Ammo,Rad,R9,Rare,20
+12,9,10,Ammo,Gunk,C,Common,15
+13,9,10,Ammo,Chem Darts,C,Common,10
+14,9,2d3,Ammo,Dumdum,R7,Rare,5
+15,8,2d3,Ammo,Fragmentation,R8,Rare,10
+16,8,2d3,Ammo,Manstopper,R8,Rare,10
+17,8,2d3,Ammo,Krak Grandes,R8,Rare,25
+18,8,2d3,Ammo,Stun Grenades,R8,Rare,20
+19,7,1d3,Ammo,Choke Gas Grenades,R9,Rare,35
+20,9,10,Ammo,Flares,C,Common,30
+21,4,1d3,Ammo,Plasma Grenades,R12,Rare,100
+22,7,1d3,Ammo,Photon Flash Grenades,R9,Rare,15
+23,6,1d3,Ammo,Scare Gas Grenades,R10,Rare,45
+24,9,10,Ammo,Smoke Grenades,C,Common,15
+25,3,1d3,Basic,Arc Rifle,R13,Rare,100
+26,9,10,Basic,Autogun,C,Common,15
+27,9,10,Basic,Reclaimed Autogun,C,Common,10
+28,8,2d3,Basic,Boltgun,R8,Rare,55
+29,9,2d3,Basic,Combat Shotgun,R7,Rare,70
+30,6,1d3,Basic,Kroot Long Rifle,R10,Rare,30
+31,9,10,Basic,Lasgun,C,Common,15
+32,6,1d3,Basic,Rak'Gol Razor Gun,I11,Illegal,60
+33,9,10,Basic,Sawn-off Shotgun,C,Common,15
+34,9,10,Basic,Shotgun,C,Common,30
+35,5,1d3,Basic,Sling Gun,R11,Rare,55
+36,7,1d3,Basic,Stake-crossbow,R9,Rare,60
+37,9,10,Basic,Throwing Knives,C,Common,10
+38,7,1d3,Basic,Warpstorm Bolter,I10,Illegal,60
+39,9,10,Pistol,Autopistol,C,Common,10
+40,9,10,Pistol,Reclaimed Autopistol,C,Common,5
+41,8,2d3,Pistol,Bolt Pistol,R8,Rare,45
+42,6,1d3,Pistol,Autopistol Combi-pistol Hand Flamer,R10,Rare,65
+43,6,1d3,Pistol,Autopistol Combi-pistol Plasma Pistol,R10,Rare,50
+44,5,1d3,Pistol,Bolt Pistol Combi-pistol Hand Flamer,R11,Rare,110
+45,5,1d3,Pistol,Bolt Pistol Combi-pistol Plasma Pistol,R11,Rare,80
+46,8,2d3,Pistol,Stub Gun Combi-pistol Plasma Pistol,R8,Rare,40
+47,5,1d3,Pistol,Grav Pistol,R11,Rare,70
+48,8,2d3,Pistol,Hand Flamer,R8,Rare,75
+49,4,1d3,Pistol,Inferno Pistol,R12,Rare,145
+50,9,10,Pistol,Laspistol,C,Common,10
+51,7,1d3,Pistol,Needle Pistol,R9,Rare,30
+52,7,1d3,Pistol,Plasma Pistol,R9,Rare,50
+53,9,10,Pistol,Stub Gun,C,Common,5
+54,7,1d3,Pistol,Web Pistol,R9,Rare,90
+55,4,1d3,Pistol,Withertouch,I13,Illegal,55
+56,3,1d3,Pistol,Arched Dueling Pistol**,R13,Rare,120
+57,5,1d3,Pistol,Digi-Multi Laser**,R11,Rare,100
+58,8,1d3,Special ,Balefire Thrower,I9,Illegal,120
+59,6,1d3,Special ,Autogun Comb-weapon Flamer,R10,Rare,110
+60,9,2d3,Special ,Autogun Comb-weapon Grenade Launcher,R7,Rare,30
+61,8,2d3,Special ,Bolter Combi-weapon Flamer,R8,Rare,180
+62,8,2d3,Special ,Bolter Combi-weapon Grenade Launcher,R8,Rare,60
+63,4,1d3,Special ,Bolter Combi-weapon Melta,R12,Rare,170
+64,6,1d3,Special ,Bolter Combi-weapon Needler,R10,Rare,90
+65,6,1d3,Special ,Bolter Combi-weapon Plasma Gun,R10,Rare,115
+66,9,2d3,Special ,Flamer,R7,Rare,140
+67,5,1d3,Special ,Grav Gun,R11,Rare,120
+68,8,2d3,Special ,Grenade Launcher,R8,Rare,65
+69,8,1d3,Special ,Hrud Fusil,I9,Illegal,120
+70,5,1d3,Special ,Kai Hellspear,I12,Illegal,90
+71,9,10,Special ,Long Las,C,Common,20
+72,9,2d3,Special ,Long Rifle,R7,Rare,30
+73,5,1d3,Special ,Meltagun,R11,Rare,135
+74,5,1d3,Special ,Necrotic Beamer,I12,Illegal,110
+75,7,1d3,Special ,Needle Rifle,R9,Rare,40
+76,4,1d3,Special ,Neural Flayer,I13,Illegal,90
+77,7,1d3,Special ,Plasma Gun,R9,Rare,100
+78,4,1d3,Special ,Storm Bolter,R12,Rare,95
+79,7,1d3,Special ,Web Gun,R9,Rare,125
+80,2,1d3,Special ,Yu'Vath Puzzle Box,I15,Illegal,150
+81,4,1d3,Special ,Black Vomitus**,I13,Illegal,180
+82,4,1d3,Special ,Rage Unending**,I13,Illegal,135
+83,4,1d3,Special ,Scourer of Flesh**,I13,Illegal,175
+84,6,1d3,Heavy,Autocannon,R10,Rare,160
+85,8,1d3,Heavy,Demiurg Energy Drill,I9,Illegal,100
+86,6,1d3,Heavy,Grav Cannon,R10,Rare,140
+87,7,1d3,Heavy,Harpoon Launcher,R9,Rare,110
+88,6,1d3,Heavy,Heavy Bolter,R10,Rare,160
+89,6,1d3,Heavy,Heavy Flamer,R10,Rare,195
+90,9,2d3,Heavy,Heavy Stubber,R7,Rare,130
+91,6,1d3,Heavy,Lascannon,R10,Rare,155
+92,7,1d3,Heavy,Mining Laser,R9,Rare,125
+93,6,1d3,Heavy,Missile Launcher,R10,Rare,165
+94,5,1d3,Heavy,Mole Launcher,R11,Rare,100
+95,5,1d3,Heavy,Multi-Melta,R11,Rare,180
+96,5,1d3,Heavy,Plasma Cannon,R11,Rare,130
+97,6,1d3,Heavy,Seismic Cannon,R10,Rare,140
+98,9,10,Close Combat,Fighting Knife,C,Common,15
+99,7,1d3,Close Combat,Power Knife,R9,Rare,25
+100,7,1d3,Close Combat,Stiletto Knife,R9,Rare,20
+101,9,10,Close Combat,Axe,C,Common,10
+102,7,1d3,Close Combat,Chainaxe,R9,Rare,30
+103,9,10,Close Combat,Cleaver,C,Common,20
+104,8,2d3,Close Combat,Chainsword,R8,Rare,25
+105,6,1d3,Close Combat,Digi Laser,R10,Rare,25
+106,9,10,Close Combat,Flail,C,Common,20
+107,8,1d3,Close Combat,Goredrinker Axe,I9,Illegal,40
+108,9,10,Close Combat,Heavy Club,C,Common,15
+109,8,1d3,Close Combat,Hex'Iron Blade,I9,Illegal,25
+110,9,10,Close Combat,Maul (Club),C,Common,10
+111,6,1d3,Close Combat,Servo Claw,R10,Rare,35
+112,7,1d3,Close Combat,Stilleto Sword,R9,Rare,35
+113,9,2d3,Close Combat,Sword,R6,Rare,20
+114,9,10,Close Combat,Whip,C,Common,15
+115,6,1d3,Close Combat,Whisperbane Knife,I11,Illegal,30
+116,8,1d3,Close Combat,Xenarch Death-arc,I9,Illegal,75
+117,8,1d3,Close Combat,Desire's Needle,I9,Illegal,50
+118,6,1d3,Close Combat,Las Cutter,R10,Rare,85
+119,5,1d3,Close Combat,Lightning Claw,R11,Rare,70
+120,8,2d3,Close Combat,Power Axe,R8,Rare,35
+121,5,1d3,Close Combat,Power Claw,R11,Rare,55
+122,5,1d3,Close Combat,Power Fist,R11,Rare,100
+123,8,2d3,Close Combat,Power Hammer,R8,Rare,45
+124,8,2d3,Close Combat,Power Maul,R8,Rare,30
+125,8,2d3,Close Combat,Power Pick,R8,Rare,40
+126,7,1d3,Close Combat,Power Sword,R9,Rare,50
+127,8,2d3,Close Combat,Shock Baton,R8,Rare,30
+128,7,1d3,Close Combat,Shock Stave,R9,Rare,25
+129,7,1d3,Close Combat,Tenebrous Scourge,I10,Illegal,60
+130,5,1d3,Close Combat,Thunder Hammer,R11,Rare,70
+131,9,2d3,Close Combat,Chain Glaive,R7,Rare,60
+132,6,1d3,Close Combat,Greatsword,R10,Rare,40
+133,7,1d3,Close Combat,Heavy Rock Cutter,R9,Rare,135
+134,7,1d3,Close Combat,Heavy Rock Drill,R9,Rare,90
+135,7,1d3,Close Combat,Heavy Rock Saw,R9,Rare,120
+136,7,1d3,Close Combat,Polearm,R9,Rare,30
+137,9,10,Close Combat,Two-handed Axe,C,Common,25
+138,9,10,Close Combat,Two-handed Hammer,C,Common,35
+139,5,1d3,Close Combat,Barbed Flabellum**,I12,Illegal,80
+140,4,1d3,Close Combat,Bloodfingers**,I13,Illegal,95
+141,4,1d3,Close Combat,Drawn-out Death**,I13,Illegal,100
+142,4,1d3,Close Combat,Gleeful Judgment**,I13,Illegal,85
+143,4,1d3,Close Combat,Haemophagic Blade**,I13,Illegal,150
+144,8,2d3,Grenades,Blasting Charge,R8,Rare,35
+145,7,1d3,Grenades,Choke Gas,R9,Rare,50
+146,4,1d3,Grenades,Demo Charge,R12,Rare,50
+147,9,10,Grenades,Flares,C,Common,20
+148,9,10,Grenades,Frag,C,Common,30
+149,9,2d3,Grenades,Incendiary,R7,Rare,40
+150,8,2d3,Grenades,Krak,R8,Rare,45
+151,5,1d3,Grenades,Melta Bomb,R11,Rare,60
+152,7,1d3,Grenades,Mindflect Shard,I10,Illegal,50
+153,6,1d3,Grenades,Phosphor Canister,R10,Rare,40
+154,7,1d3,Grenades,Photon Flash,R9,Rare,15
+155,6,1d3,Grenades,Plasma,R10,Rare,90
+156,6,1d3,Grenades,Scare Gas,R10,Rare,45
+157,8,1d3,Grenades,Shard,I9,Illegal,30
+158,9,10,Grenades,Smoke,C,Common,15
+159,8,2d3,Grenades,Stun,R8,Rare,15
+160,9,2d3,Grenades,Anti-plant,R7,Rare,30
+161,9,10,Grenades,Gunk Bomb,C,Common,40
+162,1,1d3,Grenades,Vortex**,I16,Illegal,500
+163,9,10,Booby Traps,Frag,C,Common,20
+164,8,2d3,Booby Traps,Gas,R8,Rare,40
+165,6,1d3,Booby Traps,Melta,R10,Rare,50
+166,9,10,Armor,Ablative Overlay*,C,Common,20
+167,4,1d3,Armor,Archaed-Carapace,R12,Rare,120
+168,8,1d3,Armor,Armorweave,I9,Illegal,20
+169,6,1d3,Armor,Light Carapace,R10,Rare,80
+170,5,1d3,Armor,Heavy Carapace,R11,Rare,100
+171,8,2d3,Armor,Ceramite Shield,R8,Rare,40
+172,9,10,Armor,Flak,C,Common,10
+173,9,10,Armor,Gutterforged Cloak,C,Common,15
+174,6,1d3,Armor,Hazard Suit,R10,Rare,10
+175,4,1d3,Armor,Mantle Malifica,I13,Illegal,75
+176,9,10,Armor,Mesh,C,Common,15
+177,8,2d3,Armor,Reflec Shroud,R8,Rare,30
+178,9,10,Armor,Scrap Shield,C,Common,15
+179,5,1d3,Field Armor,Conversion Field,R11,Rare,60
+180,4,1d3,Field Armor,Displacer Field,R12,Rare,70
+181,6,1d3,Field Armor,Refractor Field,R10,Rare,50
+182,3,1d3,Personal Equipment,Archaeotech Device,R13,Rare,120
+183,9,2d3,Personal Equipment,Armored Undersuit,R7,Rare,25
+184,8,2d3,Personal Equipment,Bio-booster,R8,Rare,35
+185,8,2d3,Personal Equipment,Bio-scanner,R8,Rare,30
+186,4,1d3,Personal Equipment,Blind Snake Pouch,R12,Rare,60
+187,7,1d3,Personal Equipment,Cameleoline Cloak,R9,Rare,35
+188,4,1d3,Personal Equipment,Chem-Synth,R12,Rare,15
+189,3,1d3,Personal Equipment,Chrono-crystal,I14,Illegal,500
+190,8,2d3,Personal Equipment,Cred Sniffer,R8,Rare,35
+191,7,1d3,Personal Equipment,Data-thief,I10,Illegal,35
+192,7,1d3,Personal Equipment,Dome Runner Map,R9,Rare,100
+193,9,10,Personal Equipment,Drop Rig,C,Common,10
+194,7,1d3,Personal Equipment,Flasehood***,R9,Rare,40
+195,9,10,Personal Equipment,Filter Plugs,C,Common,10
+196,7,1d3,Personal Equipment,Frenzon Collar,R9,Rare,30
+197,6,1d3,Personal Equipment,Forged Gulder Seal,I11,Illegal,55
+198,9,10,Personal Equipment,Grapnel Launcher,C,Common,25
+199,6,1d3,Personal Equipment,Grav-chute,R10,Rare,50
+200,5,1d3,Personal Equipment,Guilder Cartograph,R11,Rare,70
+201,3,1d3,Personal Equipment,Halo Device,I14,Illegal,250
+202,8,2d3,Personal Equipment,Harrier-skulls,R8,Rare,40
+203,6,1d3,Personal Equipment,Hexagrammatic Fetish,R10,Rare,35
+204,8,1d3,Personal Equipment,Holochromatic Field,I9,Illegal,100
+205,9,2d3,Personal Equipment,Industrial Respirator,R7,Rare,30
+206,9,10,Personal Equipment,Lho Sticks,C,Common,5
+207,9,10,Personal Equipment,Lock-punch,C,Common,10
+208,9,10,Personal Equipment,Magnacles,C,Common,20
+209,4,1d3,Personal Equipment,Malefic Artefact,I13,Illegal,90
+210,7,1d3,Personal Equipment,Medicae Kit,R9,Rare,30
+211,5,1d3,Personal Equipment,Mnemonic Inload Spike,I12,Illegal,100
+212,7,1d3,Personal Equipment,Photo-goggles,R9,Rare,35
+213,9,10,Personal Equipment,Photo-Lumen,C,Common,20
+214,5,1d3,Personal Equipment,Psi-grub,I12,Illegal,50
+215,9,10,Personal Equipment,Respirator,C,Common,15
+216,7,1d3,Personal Equipment,Sanctioning Writ,I10,Illegal,25
+217,9,10,Personal Equipment,Second Best,C,Common,15
+218,4,1d3,Personal Equipment,Partial Servo Harness,R12,Rare,130
+219,4,1d3,Personal Equipment,Full Servo Harness,R12,Rare,160
+220,9,10,Personal Equipment,Skinblade,C,Common,10
+221,9,2d3,Personal Equipment,Stimm-slug Stash,R7,Rare,30
+222,9,10,Personal Equipment,Strip Kit,C,Common,15
+223,7,1d3,Personal Equipment,Suspensor Harness,R9,Rare,40
+224,4,1d3,Personal Equipment,Threadneedle Worms,I13,Illegal,45
+225,8,2d3,Personal Equipment,Web Solvent,R8,Rare,25
+226,9,10,Personal Equipment,Wild Snake,C,Common,30
+227,5,1d3,Personal Equipment,Xenoculum,I12,Illegal,80
+228,7,1d3,Personal Equipment,Camoelean Elixir**,I10,Illegal,75
+229,3,1d3,Personal Equipment,Draconic Scales**,I14,Illegal,250
+230,5,1d3,Personal Equipment,Mirror Aegis**,I12,Illegal,125
+231,5,1d3,Personal Equipment,Psychofamile Pheromone,I12,Illegal,150
+232,7,1d3,Personal Equipment,Radcounter,R9,Rare,50
+233,6,1d3,Weapon Accessories,Focusing Crystal,R10,Rare,30
+234,8,2d3,Weapon Accessories,Gunshroud,R8,Rare,20
+235,9,10,Weapon Accessories,Hotshot Las Pack,C,Common,20
+236,8,2d3,Weapon Accessories,Infra-sight,R8,Rare,40
+237,7,1d3,Weapon Accessories,Las-projector,R9,Rare,35
+238,7,1d3,Weapon Accessories,Mono-sight,R9,Rare,35
+239,1,1d3,Weapon Accessories,Psi-amplifier,R15,Rare,75
+240,6,1d3,Weapon Accessories,Suspensor,R10,Rare,60
+241,9,10,Weapon Accessories,Telescopic Sight,C,Common,25
+242,4,1d3,Status Items,Exotic Furs,R12,Rare,50
+243,6,1d3,Status Items,Gold-plated Gun,R10,Rare,25% of weapon
+244,5,1d3,Status Items,Opulent Jewellery,R11,Rare,80
+245,6,1d3,Status Items,Uphive Railments,R10,Rare,50
+246,4,1d3,Status Items,Sensor Skull,R12,Rare,60
+247,4,1d3,Status Items,Medi Skull,R12,Rare,80
+248,4,1d3,Status Items,Gun Skull,R12,Rare,65

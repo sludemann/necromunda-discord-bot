@@ -8,9 +8,8 @@ from cogs.dice import Dice, dice_group
 from cogs.campaigns import Campaigns, campaign_group
 from cogs.gangs import Gangs, gang_group
 from cogs.banking import Banking, banking_group
-from cogs.territories import Territories, territory_group
 from cogs.assets import Assets, asset_group
-from cogs.hangers_on import HangersOn, hanger_group
+from cogs.marketplace import Marketplace, marketplace_group
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -32,12 +31,10 @@ async def on_ready():
         bot.tree.add_command(admin_group)
         await bot.add_cog(Banking(bot))
         bot.tree.add_command(banking_group)
-        await bot.add_cog(Territories(bot))
-        bot.tree.add_command(territory_group)
         await bot.add_cog(Assets(bot))
         bot.tree.add_command(asset_group)
-        await bot.add_cog(HangersOn(bot))
-        bot.tree.add_command(hanger_group)
+        await bot.add_cog(Marketplace(bot))
+        bot.tree.add_command(marketplace_group)
         synced = await bot.tree.sync()
         print(f'Synced {len(synced)} slash commands.')
     except Exception as e:

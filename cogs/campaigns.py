@@ -5,38 +5,26 @@ from db.campaigns import add_campaign, get_all_campaigns, delete_campaign
 from cogs.autocomplete import campaign_autocomplete, gang_autocomplete
 from cogs.dice import Dice
 from db.gangs import get_gangs_by_campaign
-from db.gang_items import get_territories_by_gang, get_hangers_on_by_gang, get_assets_by_gang
+from db.gang_assets import get_gang_assets
+from db.banking import log_transaction
+
 
 async def calculate_payday(gang_id: int, user_id: int):
-    from db.banking import log_transaction
-
-    territories = get_territories_by_gang(gang_id)
-    hangers_on = get_hangers_on_by_gang(gang_id)
-    assets = get_assets_by_gang(gang_id)
-
+    assets = get_gang_assets(gang_id)
     total = 0
 
-    for _, _, _, static_value, formula in territories:
-        total += static_value if static_value else 0
-        if formula:
-            result = Dice.roll_formula(formula)
-            if isinstance(result, dict):
-                total += result.get('total', 0)
+    for asset in assets:
+        asset_id, gang_id, name, asset_type, value, formula, is_consumed, should_sell, note, *_ = asset
 
-    for _, _, _, static_value, formula in hangers_on:
-        total += static_value if static_value else 0
-        if formula:
-            result = Dice.roll_formula(formula)
-            if isinstance(result, dict):
-                total += result.get('total', 0)
-
-    for _, _, value, formula, _, should_sell in assets:
-        if should_sell:
-            total += value if value else 0
+        if asset_type in ('Territory', 'Hanger-On', 'Skill', 'Other') or should_sell:
+            if value:
+                total += value
             if formula:
                 result = Dice.roll_formula(formula)
-                if isinstance(result, dict):
-                    total += result.get('total', 0)
+                total += result["total"]
+
+        # if should_sell:
+          # remove the asset after sold
 
     log_transaction(gang_id, total, "Pay Day", user_id)
     return total
