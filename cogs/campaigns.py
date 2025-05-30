@@ -4,30 +4,62 @@ from discord import app_commands
 from db.campaigns import add_campaign, get_all_campaigns, delete_campaign
 from cogs.autocomplete import campaign_autocomplete, gang_autocomplete
 from cogs.dice import Dice
+from cogs.assets import ASSET_COLORS, ASSET_ICONS
 from db.gangs import get_gangs_by_campaign
 from db.gang_assets import get_gang_assets
 from db.banking import log_transaction
 
+def format_payday_summary_embed(gang_name: str, summary: list, total: float) -> discord.Embed:
+    embed = discord.Embed(
+        title=f"💸 Pay Day Summary for {gang_name}",
+        description=f"Total Income: **{total} credits**",
+        color=0xFFD700  # Gold
+    )
+
+    for entry in summary:
+        icon = ASSET_ICONS.get(entry["type"], "🔹")
+        color = ASSET_COLORS.get(entry["type"], 0x00ff00)
+        embed.add_field(
+            name=f"{icon} {entry['name']} ({entry['type']})",
+            value="\n".join(entry["components"]) + f"\n**Subtotal:** {entry['subtotal']} credits",
+            inline=False
+        )
+
+    return embed
 
 async def calculate_payday(gang_id: int, user_id: int):
     assets = get_gang_assets(gang_id)
     total = 0
+    summary = []
 
     for asset in assets:
         asset_id, gang_id, name, asset_type, value, formula, is_consumed, should_sell, note, *_ = asset
+        asset_total = 0
+        components = []
 
         if asset_type in ('Territory', 'Hanger-On', 'Skill', 'Other') or should_sell:
             if value:
-                total += value
+                asset_total += value
+                components.append(f"Flat: {value}")
             if formula:
                 result = Dice.roll_formula(formula)
-                total += result["total"]
+                asset_total += result["total"]
+                components.append(f"Roll: {result['total']} from {result['original']}")
 
-        # if should_sell:
-          # remove the asset after sold
+            if should_sell:
+                remove_asset(asset_id)  # Presuming you have this function
+
+            summary.append({
+                "name": name,
+                "type": asset_type,
+                "components": components,
+                "subtotal": asset_total
+            })
+
+            total += asset_total
 
     log_transaction(gang_id, total, "Pay Day", user_id)
-    return total
+    return total, summary
 
 class Campaigns(commands.Cog):
     def __init__(self, bot):
@@ -68,19 +100,21 @@ async def payday_all(interaction: discord.Interaction, campaign_id: int):
         await interaction.response.send_message("No gangs found for this campaign.", ephemeral=True)
         return
 
-    summary = []
-    for gang_id, yak_url, user_id, gang_name, gang_type in gangs:
-        total = await calculate_payday(gang_id, interaction.user.id)
-        summary.append(f"{gang_name}: {total} credits")
+    embeds = []
+    for gang_id, _, _, gang_name, *_ in gangs:
+        total, summary = await calculate_payday(gang_id, interaction.user.id)
+        embeds.append(format_payday_summary_embed(gang_name, summary, total))
 
-    message = "**Payday Summary:**\n" + "\n".join(summary)
-    await interaction.response.send_message(message)
+    # Discord.py lets you send multiple embeds at once
+    await interaction.response.send_message(embeds=embeds)
 
 @app_commands.command(name="payday_one", description="Apply payday to a single gang")
 @app_commands.autocomplete(campaign_id=campaign_autocomplete, gang_id=gang_autocomplete)
 async def payday_one(interaction: discord.Interaction, campaign_id: int, gang_id: int):
-    total = await calculate_payday(gang_id, interaction.user.id)
-    await interaction.response.send_message(f"Gang ID {gang_id} received {total} credits.")
+    g = get_gang_by_id(campaign_id)
+    total, summary = await calculate_payday(gang_id, interaction.user.id)
+    embed = format_payday_summary_embed(g[3], summary, total)
+    await interaction.response.send_message(embed=embed)
 
 # Grouping
 campaign_group = app_commands.Group(name="campaign", description="Campaign related commands")

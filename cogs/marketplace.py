@@ -1,8 +1,9 @@
 import pandas as pd
 from discord import app_commands, Interaction
 from discord.ext import commands
-from db.marketplace import save_market_data, get_market_data
-from cogs.autocomplete import campaign_autocomplete, gang_autocomplete
+from db.gangs import get_gang_by_id
+from db.marketplace import save_market_data, get_market_data, create_trade_offer, get_trade_offer, accept_trade_offer, get_trade_offers_by_campaign
+from cogs.autocomplete import campaign_autocomplete, gang_autocomplete, resolve_user_preferences, MissingPreferenceError
 
 marketplace_group = app_commands.Group(name="marketplace", description="Marketplace management commands")
 
@@ -89,64 +90,78 @@ class Marketplace(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-@marketplace_group.command(name="generate", description="Generate the trading post and secret stash for a campaign")
-@app_commands.autocomplete(campaign_id=campaign_autocomplete)
-async def generate_market(interaction: Interaction, campaign_id: int):
-    trading_post, secret_stash = generate_market_data()
-    save_market_data(campaign_id, trading_post, secret_stash)
-    await interaction.response.send_message(f"Marketplace generated for campaign {campaign_id} with {len(trading_post)} trading items and {len(secret_stash)} secret stash items.")
+@marketplace_group.command(name="generate", description="Generate the trading post and secret stash")
+async def generate_market(interaction: Interaction):
+    from . import generate_market_data
+    try:
+        campaign_id, _ = resolve_user_preferences(interaction, require_campaign=True, require_gang=False)
+        trading_post, secret_stash = generate_market_data()
+        save_market_data(campaign_id, trading_post, secret_stash)
+        await interaction.response.send_message(f"Marketplace generated for campaign {campaign_id} with {len(trading_post)} trading items and {len(secret_stash)} secret stash items.")
+    except MissingPreferenceError as e:
+        await interaction.response.send_message(str(e), ephemeral=True)
 
 @marketplace_group.command(name="view", description="View the current trading post and secret stash")
-@app_commands.autocomplete(campaign_id=campaign_autocomplete)
-async def view_market(interaction: Interaction, campaign_id: int):
-    trading_post, secret_stash, generated_at = get_market_data(campaign_id)
-    if trading_post is None:
-        await interaction.response.send_message("No marketplace data found for this campaign.")
-        return
+async def view_market(interaction: Interaction):
+    try:
+        campaign_id, _ = resolve_user_preferences(interaction, require_campaign=True, require_gang=False)
+        trading_post, secret_stash, generated_at = get_market_data(campaign_id)
+        if trading_post is None:
+            await interaction.response.send_message("No marketplace data found for this campaign.")
+            return
 
-    response = f"**Marketplace for Campaign {campaign_id}**\nGenerated at: {generated_at}\n\n**Trading Post:**\n"
-    for item in trading_post:
-        response += f"- {item['Name']} ({item['Category']}, Rarity {item['Rarity Rating']}) - Cost {item['Cost']}\n"
+        response = f"**Marketplace for Campaign {campaign_id}**\nGenerated at: {generated_at}\n\n**Trading Post:**\n"
+        for item in trading_post:
+            response += f"- {item['Name']} ({item['Category']}, Rarity {item['Rarity Rating']}) - Cost {item['Cost']}\n"
 
-    response += "\n**Secret Stash:**\n"
-    for item in secret_stash:
-        response += f"- {item['Name']} ({item['Category']}, Rarity {item['Rarity Rating']}) - Cost {item['Cost']}\n"
+        response += "\n**Secret Stash:**\n"
+        for item in secret_stash:
+            response += f"- {item['Name']} ({item['Category']}, Rarity {item['Rarity Rating']}) - Cost {item['Cost']}\n"
 
-    await interaction.response.send_message(response)
+        await interaction.response.send_message(response)
+    except MissingPreferenceError as e:
+        await interaction.response.send_message(str(e), ephemeral=True)
 
 @marketplace_group.command(name="trade", description="Create a trade offer")
-@app_commands.describe(campaign_id="Campaign ID", from_gang_id="Your Gang ID", to_gang_id="Target Gang ID", offered_assets="Assets offered (comma-separated)", offered_credits="Credits offered", requested_assets="Assets requested (comma-separated)", requested_credits="Credits requested")
-@app_commands.autocomplete(campaign_id=campaign_autocomplete, from_gang_id=gang_autocomplete, to_gang_id=gang_autocomplete)
-async def make_offer(interaction: Interaction, campaign_id: int, from_gang_id: int, to_gang_id: int, offered_assets: str = None, offered_credits: int = 0, requested_assets: str = None, requested_credits: int = 0):
-    offer_id = create_offer(from_gang_id, to_gang_id, campaign_id, offered_assets or "", offered_credits, requested_assets or "", requested_credits)
-    await interaction.response.send_message(f"Trade offer #{offer_id} created from gang {from_gang_id} to gang {to_gang_id}.")
+@app_commands.describe(to_gang_id="Target Gang ID", offered_assets="Assets offered (comma-separated)", offered_credits="Credits offered", requested_assets="Assets requested (comma-separated)", requested_credits="Credits requested")
+@app_commands.autocomplete(to_gang_id=gang_autocomplete)
+async def make_offer(interaction: Interaction, to_gang_id: int, offered_assets: str = None, offered_credits: int = 0, requested_assets: str = None, requested_credits: int = 0):
+    try:
+        campaign_id, from_gang_id = resolve_user_preferences(interaction)
+        offer_id = create_trade_offer(campaign_id, from_gang_id, to_gang_id, offered_assets or "", offered_credits, requested_assets or "", requested_credits)
+        await interaction.response.send_message(f"Trade offer #{offer_id} created from gang {from_gang_id} to gang {to_gang_id}.")
+    except MissingPreferenceError as e:
+        await interaction.response.send_message(str(e), ephemeral=True)
 
-@marketplace_group.command(name="list_trades", description="List all trade offers in a campaign")
-@app_commands.autocomplete(campaign_id=campaign_autocomplete)
-async def list_offers(interaction: Interaction, campaign_id: int):
-    offers = get_offers_by_campaign(campaign_id)
-    if not offers:
-        await interaction.response.send_message("No trade offers available.")
-        return
-    message = "**Trade Offers:**\n"
-    for offer in offers:
-        oid, from_gid, to_gid, o_assets, o_credits, r_assets, r_credits, accepted = offer
-        status = "Accepted" if accepted else "Open"
-        message += f"ID {oid}: Gang {from_gid} offers [{o_assets}] + {o_credits} credits to Gang {to_gid} for [{r_assets}] + {r_credits} credits — {status}\n"
-    await interaction.response.send_message(message)
+@marketplace_group.command(name="list_trades", description="List all trade offers in the current campaign")
+async def list_offers(interaction: Interaction):
+    try:
+        campaign_id, _ = resolve_user_preferences(interaction, require_campaign=True, require_gang=False)
+        offers = get_trade_offers_by_campaign(campaign_id)
+        if not offers:
+            await interaction.response.send_message("No trade offers available.")
+            return
+        message = "**Trade Offers:**\n"
+        for offer in offers:
+            message += f"ID {offer['id']}: Gang {offer['from_gang_id']} offers [{offer['offered_assets']}] + {offer['offered_credits']} credits to Gang {offer['to_gang_id']} for [{offer['requested_assets']}] + {offer['requested_credits']} credits — {offer['status']}\n"
+        await interaction.response.send_message(message)
+    except MissingPreferenceError as e:
+        await interaction.response.send_message(str(e), ephemeral=True)
 
 @marketplace_group.command(name="accept_trade", description="Accept a trade offer")
-@app_commands.describe(offer_id="ID of the offer to accept", to_gang_id="Your gang's ID")
-@app_commands.autocomplete(to_gang_id=gang_autocomplete)
-async def accept_offer_cmd(interaction: Interaction, offer_id: int, to_gang_id: int):
-    user_id = str(interaction.user.id)
-    owner_id = get_gang_owner(to_gang_id)
-    if user_id != owner_id:
-        await interaction.response.send_message("You do not own the target gang and cannot accept this trade.", ephemeral=True)
-        return
-    result = accept_offer(offer_id, to_gang_id)
-    await interaction.response.send_message(result)
+@app_commands.describe(offer_id="ID of the offer to accept")
+async def accept_offer_cmd(interaction: Interaction, offer_id: int):
+    try:
+        _, to_gang_id = resolve_user_preferences(interaction, require_campaign=False)
+        user_id = str(interaction.user.id)
+        owner_id = get_gang_by_id(to_gang_id)[2]
+        if user_id != owner_id:
+            await interaction.response.send_message("You do not own the target gang and cannot accept this trade.", ephemeral=True)
+            return
+        result = accept_trade_offer(offer_id)
+        await interaction.response.send_message(result)
+    except MissingPreferenceError as e:
+        await interaction.response.send_message(str(e), ephemeral=True)
 
 def setup(bot):
     bot.add_cog(Marketplace(bot))
-    bot.tree.add_command(marketplace_group)

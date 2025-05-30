@@ -32,13 +32,13 @@ def get_market_data(campaign_id):
         return json.loads(trading_post), json.loads(secret_stash), generated_at
     return None, None, None
 
-def create_trade_offer(campaign_id, from_gang_id, to_gang_id, offered_assets, requested_assets, credits):
+def create_trade_offer(campaign_id, from_gang_id, to_gang_id, offered_assets, offered_credits, requested_assets, requested_credits):
     conn = get_connection()
     c = conn.cursor()
     c.execute("""
-        INSERT INTO trade_offers (campaign_id, from_gang_id, to_gang_id, offered_assets, requested_assets, credits, status)
-        VALUES (?, ?, ?, ?, ?, ?, 'pending')
-    """, (campaign_id, from_gang_id, to_gang_id, offered_assets, requested_assets, credits))
+        INSERT INTO trade_offers (campaign_id, from_gang_id, to_gang_id, offered_assets, offered_credits, requested_assets, requested_credits, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')
+    """, (campaign_id, from_gang_id, to_gang_id, offered_assets, offered_credits, requested_assets, requested_credits))
     offer_id = c.lastrowid
     conn.commit()
     conn.close()
@@ -69,9 +69,9 @@ def accept_trade_offer(offer_id):
 
     # Transfer assets
     for asset_name in offer['offered_assets'].split(','):
-        c.execute("UPDATE gang_assets SET gang_id = ? WHERE gang_id = ? AND type = ?", (offer['to_gang_id'], offer['from_gang_id'], asset_name.strip()))
+        c.execute("UPDATE gang_assets SET gang_id = ? WHERE gang_id = ? AND asset_type = ?", (offer['to_gang_id'], offer['from_gang_id'], asset_name.strip()))
     for asset_name in offer['requested_assets'].split(','):
-        c.execute("UPDATE gang_assets SET gang_id = ? WHERE gang_id = ? AND type = ?", (offer['from_gang_id'], offer['to_gang_id'], asset_name.strip()))
+        c.execute("UPDATE gang_assets SET gang_id = ? WHERE gang_id = ? AND asset_type = ?", (offer['from_gang_id'], offer['to_gang_id'], asset_name.strip()))
 
     # Transfer credits
     if offer['credits']:

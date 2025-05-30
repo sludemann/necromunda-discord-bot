@@ -10,11 +10,6 @@ class Gangs(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name='register_gang')
-    async def register_gang_text(self, ctx, campaign_id: int, yaktribe_url: str):
-        response = add_gang(str(ctx.author.id), campaign_id, yaktribe_url)
-        await ctx.send(response)
-
 @gang_group.command(name="register", description="Register your gang to a campaign")
 @app_commands.autocomplete(campaign_id=campaign_autocomplete)
 async def register_gang_slash(interaction: discord.Interaction, campaign_id: int, yaktribe_url: str):

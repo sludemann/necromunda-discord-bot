@@ -101,7 +101,7 @@ def get_gang_by_id(gang_id: int):
     c.execute('SELECT id, yaktribe_url, user_id, gang_name, gang_type FROM gangs WHERE id = ?', (gang_id,))
     gangs = c.fetchall()
     conn.close()
-    return gangs
+    return gangs[0]
 
 def get_gangs_by_campaign(campaign_id: int):
     conn = get_connection()

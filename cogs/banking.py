@@ -17,7 +17,7 @@ async def add_credits(interaction: discord.Interaction, campaign_id: int, gang_i
     gang = get_gang_by_id(gang_id)
     log_transaction(gang_id, amount, "manual addition", interaction.user.id)
     total = get_current_credits(gang_id)
-    await interaction.response.send_message(f"Added {amount} credits to {gang[0][3]}. Current: {total}")
+    await interaction.response.send_message(f"Added {amount} credits to {gang[3]}. Current: {total}")
 
 @app_commands.command(name="subtract_credits", description="Subtract credits from a gang")
 @app_commands.describe(campaign_id="ID of the campaign", gang_id="Select a gang", amount="Credits to subtract")
@@ -26,11 +26,11 @@ async def subtract_credits(interaction: discord.Interaction, campaign_id: int, g
     current = get_current_credits(gang_id)
     gang = get_gang_by_id(gang_id)
     if current < amount:
-        await interaction.response.send_message(f"Cannot subtract {amount} credits. {gang[0][3]} only has {current} credits.", ephemeral=True)
+        await interaction.response.send_message(f"Cannot subtract {amount} credits. {gang[3]} only has {current} credits.", ephemeral=True)
         return
     log_transaction(gang_id, -amount, "manual subtraction", interaction.user.id)
     total = current - amount
-    await interaction.response.send_message(f"Subtracted {amount} credits from {gang[0][3]}. Current: {total}")
+    await interaction.response.send_message(f"Subtracted {amount} credits from {gang[3]}. Current: {total}")
 
 @app_commands.command(name="set_credits", description="Set a gang's credits to an exact value")
 @app_commands.describe(campaign_id="ID of the campaign", gang_id="Select a gang", amount="New credit value")
@@ -40,7 +40,7 @@ async def set_credits(interaction: discord.Interaction, campaign_id: int, gang_i
     gang = get_gang_by_id(gang_id)
     delta = amount - current
     log_transaction(gang_id, delta, "manual set", interaction.user.id)
-    await interaction.response.send_message(f"Set credits for {gang[0][3]} to {amount}.")
+    await interaction.response.send_message(f"Set credits for {gang[3]} to {amount}.")
 
 @app_commands.command(name="view_credits", description="View the current credits for a gang")
 @app_commands.describe(campaign_id="ID of the campaign", gang_id="Select a gang")
@@ -49,7 +49,7 @@ async def view_credits(interaction: discord.Interaction, campaign_id: int, gang_
     total = get_current_credits(gang_id)
     gang = get_gang_by_id(gang_id)
     await interaction.response.send_message(embed=discord.Embed(
-        title=f"{gang[0][3]} Total Credits",
+        title=f"{gang[3]} Total Credits",
         description=f"**{total}**",
         color=discord.Color.blue()
     ))
@@ -62,7 +62,7 @@ async def credit_history(interaction: discord.Interaction, campaign_id: int, gan
     current_total = get_current_credits(gang_id)
     gang = get_gang_by_id(gang_id)
     embed = discord.Embed(
-        title=f"{gang[0][3]} Transaction History",
+        title=f"{gang[3]} Transaction History",
         description=f"**Current Credits:** {current_total}",
         color=discord.Color.green()
     )

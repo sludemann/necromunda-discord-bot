@@ -10,6 +10,7 @@ from cogs.gangs import Gangs, gang_group
 from cogs.banking import Banking, banking_group
 from cogs.assets import Assets, asset_group
 from cogs.marketplace import Marketplace, marketplace_group
+from cogs.user_preferences import UserPreferences, profile_group
 
 intents = discord.Intents.default()
 intents.messages = True
@@ -21,6 +22,8 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 async def on_ready():
     print(f'Logged in as {bot.user}!')
     try:
+        await bot.add_cog(UserPreferences(bot))
+        bot.tree.add_command(profile_group)
         await bot.add_cog(Campaigns(bot))
         bot.tree.add_command(campaign_group)
         await bot.add_cog(Gangs(bot))

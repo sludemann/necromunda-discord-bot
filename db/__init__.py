@@ -83,7 +83,7 @@ def init_db():
                 offered_credits INTEGER DEFAULT 0,
                 requested_assets TEXT,
                 requested_credits INTEGER DEFAULT 0,
-                accepted INTEGER DEFAULT 0,
+                status TEXT DEFAULT 'pending',
                 FOREIGN KEY (from_gang_id) REFERENCES gangs(id),
                 FOREIGN KEY (to_gang_id) REFERENCES gangs(id),
                 FOREIGN KEY (campaign_id) REFERENCES campaigns(id)
