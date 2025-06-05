@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime
 import discord
 import pandas as pd
@@ -89,23 +90,105 @@ def item_to_dict(row):
         "Cost": row["Cost"]
     }
 
-def format_item_list_for_embed(items: list[dict] | None, section_name: str) -> str:
-    if not items:
-        return f"No items currently in the {section_name}."
+MAX_FIELD_VALUE_LENGTH = 1024
+# A bit of buffer to account for newlines and " (Cont.)" in title, etc.
+PRACTICAL_MAX_FIELD_VALUE_LENGTH = 1000 
 
-    value_parts = []
-    for item in items:
+
+def format_items_for_single_category(items_in_category: list[dict[str, any]]) -> list[str]:
+    """Formats items within a single category into a list of strings."""
+    item_lines = []
+    for item in items_in_category:
         name = item.get('Name', 'Unknown Item')
-        category = item.get('Category', 'N/A')
         rarity = item.get('Rarity Rating', 'N/A')
         cost = item.get('Cost', 'N/A')
-        value_parts.append(f"- **{name}** ({category}, Rarity {rarity}) - Cost: {cost}")
-    
-    # Discord field values have a limit of 1024 characters.
-    formatted_string = "\n".join(value_parts)
-    if len(formatted_string) > 1024:
-        formatted_string = formatted_string[:1020] + "..." # Truncate if too long
-    return formatted_string
+        item_lines.append(f"- **{name}** (Rarity {rarity}) - Cost: {cost}")
+    return item_lines
+
+def add_section_to_embed(
+    embed: discord.Embed,
+    items: list[dict[str, any]] | None,
+    base_field_name: str,
+    empty_section_message_suffix: str = "this section"
+):
+    """
+    Adds a section's items (grouped by category) to the embed, splitting into
+    multiple fields if necessary to respect character limits.
+    """
+    if not items:
+        embed.add_field(
+            name=base_field_name,
+            value=f"No items currently in {empty_section_message_suffix.lower()}.",
+            inline=False
+        )
+        return
+
+    categorized_items = defaultdict(list)
+    for item in items:
+        category = item.get('Category', 'Uncategorized')
+        categorized_items[category].append(item)
+
+    if not categorized_items: # Should be caught by 'if not items' but good to have
+        embed.add_field(
+            name=base_field_name,
+            value=f"No items currently in {empty_section_message_suffix.lower()}.",
+            inline=False
+        )
+        return
+
+    current_field_lines: list[str] = []
+    current_field_char_count = 0
+    field_continuation_count = 0
+
+    sorted_categories = sorted(categorized_items.keys())
+
+    for i, category_name in enumerate(sorted_categories):
+        category_header = f"\n**--- {category_name} ---**" # Added newline for spacing
+        category_item_lines = format_items_for_single_category(categorized_items[category_name])
+
+        # Calculate length of this category's content
+        # Add 1 for newline joining category_header and first item if item_lines not empty
+        category_content_block = [category_header] + category_item_lines
+        category_block_text = "\n".join(category_content_block).lstrip('\n') # lstrip for the very first header
+        category_block_len = len(category_block_text) + 1 # +1 for potential newline separator
+
+        # Check if adding this category block would exceed the limit
+        if current_field_lines and (current_field_char_count + category_block_len > PRACTICAL_MAX_FIELD_VALUE_LENGTH):
+            # Finalize and add the current field
+            field_name_to_add = base_field_name
+            if field_continuation_count > 0:
+                field_name_to_add += f" (Cont. {field_continuation_count})"
+            
+            embed.add_field(
+                name=field_name_to_add,
+                value="\n".join(current_field_lines).lstrip('\n'), # lstrip for first line
+                inline=False
+            )
+            field_continuation_count += 1
+            current_field_lines = [] # Reset for the new field
+            current_field_char_count = 0
+        
+        # Add the current category's content to the (potentially new) current field
+        current_field_lines.extend(category_content_block)
+        current_field_char_count += category_block_len # Approximating here, precise recalculation later
+
+        # Recalculate actual char count for safety (though approximation should be close)
+        current_field_char_count = len("\n".join(current_field_lines).lstrip('\n'))
+
+
+    # Add any remaining content in the last field
+    if current_field_lines:
+        field_name_to_add = base_field_name
+        if field_continuation_count > 0:
+            field_name_to_add += f" (Cont. {field_continuation_count})"
+        
+        field_value_str = "\n".join(current_field_lines).lstrip('\n')
+        if len(field_value_str) > MAX_FIELD_VALUE_LENGTH: # Final truncation if still too long
+            safe_truncate_pos = field_value_str.rfind('\n', 0, MAX_FIELD_VALUE_LENGTH - 20) # -20 for "... (truncated)"
+            if safe_truncate_pos == -1: safe_truncate_pos = MAX_FIELD_VALUE_LENGTH - 20
+            field_value_str = field_value_str[:safe_truncate_pos] + "\n... (section truncated)"
+
+        embed.add_field(name=field_name_to_add, value=field_value_str, inline=False)
 
 class Marketplace(commands.Cog):
     def __init__(self, bot):
@@ -126,46 +209,53 @@ async def view_market(interaction: Interaction):
     try:
         campaign_id, _ = resolve_user_preferences(interaction, require_campaign=True, require_gang=False)
         trading_post_items, secret_stash_items, generated_at = get_market_data(campaign_id)
-        _,campaign_name = get_campaign(campaign_id)
 
-        if trading_post_items is None and secret_stash_items is None: # Check if any data was returned
+        if trading_post_items is None and secret_stash_items is None:
             await interaction.response.send_message(
-                f"No marketplace data found for Campaign {campaign_name}.",
-                ephemeral=True # Good to make this ephemeral if no data
+                f"No marketplace data found for Campaign {campaign_id}.",
+                ephemeral=True
             )
             return
 
         embed = discord.Embed(
-            title=f"Marketplace - Campaign {campaign_name}",
-            color=discord.Color.gold() # Or any color you prefer
+            title=f"Marketplace - Campaign {campaign_id}",
+            color=discord.Color.dark_magenta() 
         )
 
-        # Handle timestamp for 'generated_at'
         if generated_at:
             if isinstance(generated_at, datetime):
-                # Use discord's built-in formatter for a nice, localized timestamp
                 embed.description = f"Last Updated: {discord.utils.format_dt(generated_at, style='R')} ({discord.utils.format_dt(generated_at, style='F')})"
-                # Alternatively, you can set the embed's timestamp directly:
-                # embed.timestamp = generated_at
-            else: # If it's already a string
+            else:
                 embed.set_footer(text=f"Generated: {str(generated_at)}")
         else:
             embed.set_footer(text="Update time not available")
 
+        # Add Trading Post items to embed
+        add_section_to_embed(
+            embed,
+            trading_post_items,
+            "🛒 Trading Post",
+            empty_section_message_suffix="the Trading Post"
+        )
 
-        # Trading Post Section
-        trading_post_value = format_item_list_for_embed(trading_post_items, "Trading Post")
-        embed.add_field(name="🛒 Trading Post", value=trading_post_value, inline=False)
-
-        # Secret Stash Section
-        secret_stash_value = format_item_list_for_embed(secret_stash_items, "Secret Stash")
-        embed.add_field(name="🤫 Secret Stash", value=secret_stash_value, inline=False)
+        # Add Secret Stash items to embed
+        add_section_to_embed(
+            embed,
+            secret_stash_items,
+            "🤫 Secret Stash",
+            empty_section_message_suffix="the Secret Stash"
+        )
         
-        await interaction.response.send_message(embed=embed)
+        if len(embed.fields) > 25:
+            print(f"Warning: Embed for campaign {campaign_id} has {len(embed.fields)} fields, max is 25.")
+
+        await interaction.response.send_message(embed=embed) # Or ephemeral=True
+
     except MissingPreferenceError as e:
         await interaction.response.send_message(str(e), ephemeral=True)
     except Exception as e:
-        print(f"Error in view_market: {e}")
+        import traceback
+        print(f"Error in view_market: {e}\n{traceback.format_exc()}")
         await interaction.response.send_message(
             "An unexpected error occurred while fetching market data.",
             ephemeral=True
