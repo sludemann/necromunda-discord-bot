@@ -5,7 +5,7 @@ from db.campaigns import add_campaign, get_all_campaigns, delete_campaign
 from cogs.autocomplete import campaign_autocomplete, gang_autocomplete
 from cogs.dice import Dice
 from cogs.assets import ASSET_COLORS, ASSET_ICONS
-from db.gangs import get_gangs_by_campaign
+from db.gangs import get_gangs_by_campaign, get_gang_by_id
 from db.gang_assets import get_gang_assets
 from db.banking import log_transaction
 
@@ -21,6 +21,7 @@ def format_payday_summary_embed(gang_name: str, summary: list, total: float) -> 
         color = ASSET_COLORS.get(entry["type"], 0x00ff00)
         embed.add_field(
             name=f"{icon} {entry['name']} ({entry['type']})",
+            color=color,
             value="\n".join(entry["components"]) + f"\n**Subtotal:** {entry['subtotal']} credits",
             inline=False
         )
@@ -46,8 +47,8 @@ async def calculate_payday(gang_id: int, user_id: int):
                 asset_total += result["total"]
                 components.append(f"Roll: {result['total']} from {result['original']}")
 
-            if should_sell:
-                remove_asset(asset_id)  # Presuming you have this function
+            # if should_sell:
+                # delete_gang_asset(asset_id)  
 
             summary.append({
                 "name": name,

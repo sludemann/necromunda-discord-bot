@@ -31,3 +31,11 @@ def get_all_campaigns(server_id: str):
     campaigns = c.fetchall()
     conn.close()
     return campaigns
+
+def get_campaign(campaign_id: str):
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute('SELECT id, name FROM campaigns WHERE id = ?', (campaign_id,))
+    campaign = c.fetchone()
+    conn.close()
+    return campaign

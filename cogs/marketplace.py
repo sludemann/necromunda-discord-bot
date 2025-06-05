@@ -1,9 +1,12 @@
+from datetime import datetime
+import discord
 import pandas as pd
 from discord import app_commands, Interaction
 from discord.ext import commands
+from db.campaigns import get_campaign
 from db.gangs import get_gang_by_id
-from db.marketplace import save_market_data, get_market_data, create_trade_offer, get_trade_offer, accept_trade_offer, get_trade_offers_by_campaign
-from cogs.autocomplete import campaign_autocomplete, gang_autocomplete, resolve_user_preferences, MissingPreferenceError
+from db.marketplace import save_market_data, get_market_data, create_trade_offer, accept_trade_offer, get_trade_offers_by_campaign
+from cogs.autocomplete import gang_autocomplete, resolve_user_preferences, MissingPreferenceError
 
 marketplace_group = app_commands.Group(name="marketplace", description="Marketplace management commands")
 
@@ -86,13 +89,30 @@ def item_to_dict(row):
         "Cost": row["Cost"]
     }
 
+def format_item_list_for_embed(items: list[dict] | None, section_name: str) -> str:
+    if not items:
+        return f"No items currently in the {section_name}."
+
+    value_parts = []
+    for item in items:
+        name = item.get('Name', 'Unknown Item')
+        category = item.get('Category', 'N/A')
+        rarity = item.get('Rarity Rating', 'N/A')
+        cost = item.get('Cost', 'N/A')
+        value_parts.append(f"- **{name}** ({category}, Rarity {rarity}) - Cost: {cost}")
+    
+    # Discord field values have a limit of 1024 characters.
+    formatted_string = "\n".join(value_parts)
+    if len(formatted_string) > 1024:
+        formatted_string = formatted_string[:1020] + "..." # Truncate if too long
+    return formatted_string
+
 class Marketplace(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
 @marketplace_group.command(name="generate", description="Generate the trading post and secret stash")
 async def generate_market(interaction: Interaction):
-    from . import generate_market_data
     try:
         campaign_id, _ = resolve_user_preferences(interaction, require_campaign=True, require_gang=False)
         trading_post, secret_stash = generate_market_data()
@@ -105,22 +125,51 @@ async def generate_market(interaction: Interaction):
 async def view_market(interaction: Interaction):
     try:
         campaign_id, _ = resolve_user_preferences(interaction, require_campaign=True, require_gang=False)
-        trading_post, secret_stash, generated_at = get_market_data(campaign_id)
-        if trading_post is None:
-            await interaction.response.send_message("No marketplace data found for this campaign.")
+        trading_post_items, secret_stash_items, generated_at = get_market_data(campaign_id)
+        _,campaign_name = get_campaign(campaign_id)
+
+        if trading_post_items is None and secret_stash_items is None: # Check if any data was returned
+            await interaction.response.send_message(
+                f"No marketplace data found for Campaign {campaign_name}.",
+                ephemeral=True # Good to make this ephemeral if no data
+            )
             return
 
-        response = f"**Marketplace for Campaign {campaign_id}**\nGenerated at: {generated_at}\n\n**Trading Post:**\n"
-        for item in trading_post:
-            response += f"- {item['Name']} ({item['Category']}, Rarity {item['Rarity Rating']}) - Cost {item['Cost']}\n"
+        embed = discord.Embed(
+            title=f"Marketplace - Campaign {campaign_name}",
+            color=discord.Color.gold() # Or any color you prefer
+        )
 
-        response += "\n**Secret Stash:**\n"
-        for item in secret_stash:
-            response += f"- {item['Name']} ({item['Category']}, Rarity {item['Rarity Rating']}) - Cost {item['Cost']}\n"
+        # Handle timestamp for 'generated_at'
+        if generated_at:
+            if isinstance(generated_at, datetime):
+                # Use discord's built-in formatter for a nice, localized timestamp
+                embed.description = f"Last Updated: {discord.utils.format_dt(generated_at, style='R')} ({discord.utils.format_dt(generated_at, style='F')})"
+                # Alternatively, you can set the embed's timestamp directly:
+                # embed.timestamp = generated_at
+            else: # If it's already a string
+                embed.set_footer(text=f"Generated: {str(generated_at)}")
+        else:
+            embed.set_footer(text="Update time not available")
 
-        await interaction.response.send_message(response)
+
+        # Trading Post Section
+        trading_post_value = format_item_list_for_embed(trading_post_items, "Trading Post")
+        embed.add_field(name="🛒 Trading Post", value=trading_post_value, inline=False)
+
+        # Secret Stash Section
+        secret_stash_value = format_item_list_for_embed(secret_stash_items, "Secret Stash")
+        embed.add_field(name="🤫 Secret Stash", value=secret_stash_value, inline=False)
+        
+        await interaction.response.send_message(embed=embed)
     except MissingPreferenceError as e:
         await interaction.response.send_message(str(e), ephemeral=True)
+    except Exception as e:
+        print(f"Error in view_market: {e}")
+        await interaction.response.send_message(
+            "An unexpected error occurred while fetching market data.",
+            ephemeral=True
+        )
 
 @marketplace_group.command(name="trade", description="Create a trade offer")
 @app_commands.describe(to_gang_id="Target Gang ID", offered_assets="Assets offered (comma-separated)", offered_credits="Credits offered", requested_assets="Assets requested (comma-separated)", requested_credits="Credits requested")
